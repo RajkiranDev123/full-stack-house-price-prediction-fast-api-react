@@ -1,2 +1,7 @@
 fastapi
-uvicorn
+uvicorn[standard]
+pandas
+pymongo
+python-dotenv  # if you use .env for Mongo URI
+scikit-learn    # if prediction_service uses ML models
+numpy           # often needed for ML/df operations

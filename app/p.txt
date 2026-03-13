@@ -4,3 +4,12 @@ pip install fastapi uvicorn pymongo python-dotenv
  uvicorn main:app --reload  
 
 http://127.0.0.1:8000/docs
+
+| Layer                                  | Job                                                |
+| -------------------------------------- | -------------------------------------------------- |
+| **Router (route function)**            | Defines the API endpoint and receives HTTP request |
+| **Controller** *(optional in FastAPI)* | Coordinates between router and service             |
+| **Service**                            | Contains business logic                            |
+| **Schema**                             | Validates request data                             |
+
+
