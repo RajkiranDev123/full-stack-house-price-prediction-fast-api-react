@@ -12,4 +12,22 @@ http://127.0.0.1:8000/docs
 | Schema                                 | Validates request data                             |
 
 
+# uvicorn :
+Runs your FastAPI app.
+
+Listens for incoming HTTP requests.
+
+Converts requests into ASGI format.
+
+Passes requests to FastAPI to find the correct route.
+
+Handles asynchronous endpoints efficiently.
+
+Sends FastAPI’s response back to the client.
+
+Provides auto-reload and logging during development.
+
+Supports multiple workers for production scaling.
+
+
 #
