@@ -21,28 +21,61 @@ function App() {
 
   const [price, setPrice] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: Number(e.target.value)
+      [name]: Number(value)
     });
+
+    setError("");
   };
 
   const predictPrice = async () => {
-    setLoading(true);
 
-    const res = await fetch("http://127.0.0.1:8000/predict/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData)
-    });
+    const requiredFields = [
+      "area",
+      "bedrooms",
+      "bathrooms",
+      "stories",
+      "parking"
+    ];
 
-    const data = await res.json();
-    setPrice(data.predicted_price);
-    setLoading(false);
+    for (let field of requiredFields) {
+      if (formData[field] === "") {
+        setError("Please fill Area, Bedrooms, Bathrooms, Stories and Parking");
+        return;
+      }
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const res = await fetch("http://127.0.0.1:8000/predict/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!res.ok) {
+        throw new Error("Prediction failed");
+      }
+
+      const data = await res.json();
+      setPrice(data.predicted_price);
+
+    } catch (err) {
+      console.error(err);
+      setError("Server error. Make sure backend is running.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,11 +86,35 @@ function App() {
 
         <div className="grid">
 
-          <input name="area" placeholder="Area (sqft)" onChange={handleChange}/>
-          <input name="bedrooms" placeholder="Bedrooms" onChange={handleChange}/>
-          <input name="bathrooms" placeholder="Bathrooms" onChange={handleChange}/>
-          <input name="stories" placeholder="Stories" onChange={handleChange}/>
-          <input name="parking" placeholder="Parking" onChange={handleChange}/>
+          <input
+            name="area"
+            placeholder="Area (sqft)"
+            onChange={handleChange}
+          />
+
+          <input
+            name="bedrooms"
+            placeholder="Bedrooms"
+            onChange={handleChange}
+          />
+
+          <input
+            name="bathrooms"
+            placeholder="Bathrooms"
+            onChange={handleChange}
+          />
+
+          <input
+            name="stories"
+            placeholder="Stories"
+            onChange={handleChange}
+          />
+
+          <input
+            name="parking"
+            placeholder="Parking"
+            onChange={handleChange}
+          />
 
           <select name="mainroad_yes" onChange={handleChange}>
             <option value="0">Main Road - No</option>
@@ -101,11 +158,14 @@ function App() {
 
         </div>
 
-        <button onClick={predictPrice}>
-          {loading ? "Predicting..." : "Predict Price"}
+        {/* Error message */}
+        {error && <p className="error">{error}</p>}
+
+        <button onClick={predictPrice} disabled={loading}>
+          {loading ? "🤖 AI Predicting..." : "🚀 Predict Price"}
         </button>
 
-        {price && (
+        {price !== null && (
           <div className="result">
             ₹ {Math.round(price).toLocaleString()}
           </div>
